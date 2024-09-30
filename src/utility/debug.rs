@@ -76,19 +76,19 @@ pub fn setup_debug_utils(
 ) -> (ash::extensions::ext::DebugUtils, vk::DebugUtilsMessengerEXT) {
     let debug_utils_loader = ash::extensions::ext::DebugUtils::new(entry, instance);
 
-    if is_enable_debug == false {
-        (debug_utils_loader, ash::vk::DebugUtilsMessengerEXT::null())
+    let utils_messenger = if !is_enable_debug {
+        ash::vk::DebugUtilsMessengerEXT::null()
     } else {
         let messenger_ci = populate_debug_messenger_create_info();
 
-        let utils_messenger = unsafe {
+        unsafe {
             debug_utils_loader
                 .create_debug_utils_messenger(&messenger_ci, None)
                 .expect("Debug Utils Callback")
-        };
+        }
+    };
 
-        (debug_utils_loader, utils_messenger)
-    }
+    (debug_utils_loader, utils_messenger)
 }
 
 pub fn populate_debug_messenger_create_info() -> vk::DebugUtilsMessengerCreateInfoEXT {
